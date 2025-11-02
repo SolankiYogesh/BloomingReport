@@ -56,8 +56,8 @@ const [shortDimension, longDimension] =
   WINDOW_WIDTH < WINDOW_HEIGHT ? [WINDOW_WIDTH, WINDOW_HEIGHT] : [WINDOW_HEIGHT, WINDOW_WIDTH]
 
 // guideline size
-const guidelineBaseWidth = 375
-const guidelineBaseHeight = 812
+const guidelineBaseWidth = 360
+const guidelineBaseHeight = 800
 
 const scale = (size: number) => (shortDimension / guidelineBaseWidth) * size
 
@@ -66,6 +66,8 @@ const verticalScale = (size: number) => (longDimension / guidelineBaseHeight) * 
 const moderateScale = (size: number, factor = 0.5) => size + (scale(size) - size) * factor
 
 const isTab = isTablet()
+
+const PADDING = scale(24)
 
 export {
   font,
@@ -76,6 +78,7 @@ export {
   isIPhoneXSeries,
   isTab,
   moderateScale,
+  PADDING,
   scale,
   SCREEN_HEIGHT,
   SCREEN_WIDTH,

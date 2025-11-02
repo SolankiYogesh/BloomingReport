@@ -28,7 +28,7 @@ export default memo(
         ]}
       >
         <StatusBar animated backgroundColor={Colors.white} barStyle={'dark-content'} />
-        {children}
+        <View style={styles.mainContainer}>{children}</View>
       </View>
     )
   }
@@ -37,6 +37,10 @@ export default memo(
 const styles = StyleSheet.create({
   container: {
     backgroundColor: Colors.white,
+    flex: 1
+  },
+  mainContainer: {
+    backgroundColor: Colors.background,
     flex: 1
   }
 })

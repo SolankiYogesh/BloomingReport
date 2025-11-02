@@ -1,14 +1,13 @@
-import { StyleSheet, Text, View } from 'react-native';
-import React from 'react';
+import React, {memo} from 'react'
+import {SafeAreaProvider} from 'react-native-safe-area-context'
 
-const App = () => {
+import Entry from '@/Pages/Entry'
+import {CommonStyle} from '@/Theme'
+
+export default memo(() => {
   return (
-    <View>
-      <Text>App</Text>
-    </View>
-  );
-};
-
-export default App;
-
-const styles = StyleSheet.create({});
+    <SafeAreaProvider style={CommonStyle.flex}>
+      <Entry />
+    </SafeAreaProvider>
+  )
+})

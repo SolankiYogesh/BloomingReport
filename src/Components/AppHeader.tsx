@@ -1,58 +1,70 @@
-import type {ReactNode} from 'react'
 import React, {memo} from 'react'
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native'
+import {StyleSheet, Text, View} from 'react-native'
 import {SvgFromXml} from 'react-native-svg'
 
-import {moderateScale, scale, SVGByteCode, verticalScale} from '@/Helpers'
+import {moderateScale, PADDING, scale, SVGByteCode, verticalScale} from '@/Helpers'
 import {Colors, Fonts} from '@/Theme'
 
-type Props = {
-  title: string
-  onBackPress?: () => void
-  rightNode?: ReactNode
-  isBack?: boolean
+import CustomStepper from './CustomStepper'
+
+type AppHeaderProps = {
+  currentStep: number
+  onStepPress?: (step: number) => void
 }
 
-export default memo(({title, onBackPress, rightNode = null, isBack = true}: Props) => {
+const LABELS = ['Farmer Profile', 'Land Details', 'Flowering Details', 'Beekeeping Scope']
+
+export default memo(({currentStep, onStepPress}: AppHeaderProps) => {
   return (
     <View style={styles.container}>
-      {isBack && (
-        <TouchableOpacity onPress={onBackPress} style={styles.iconWrapper}>
-          <SvgFromXml xml={SVGByteCode.back} />
-        </TouchableOpacity>
-      )}
-      <View style={styles.titleContainer}>
-        <Text style={styles.title}>{title}</Text>
+      <View style={styles.labelContainer}>
+        {currentStep > 1 && (
+          <SvgFromXml width={verticalScale(20)} height={verticalScale(20)} xml={SVGByteCode.back} />
+        )}
+        <Text style={styles.labelStyle}>Blooming Report</Text>
       </View>
-
-      {rightNode ? rightNode : <View style={styles.iconWrapper} />}
+      <CustomStepper currentStep={currentStep} onStepPress={onStepPress} />
+      <View style={styles.titleContainer}>
+        <Text style={styles.title}>{LABELS[currentStep - 1] || LABELS[0]}</Text>
+      </View>
     </View>
   )
 })
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: 'center',
     backgroundColor: Colors.white,
-    flexDirection: 'row',
-    height: verticalScale(60),
-    justifyContent: 'space-between',
-    paddingHorizontal: scale(16)
+    borderBottomLeftRadius: moderateScale(40),
+    borderBottomRightRadius: moderateScale(40),
+    marginBottom: verticalScale(16),
+    overflow: 'hidden',
+    paddingHorizontal: PADDING,
+    paddingVertical: verticalScale(12),
+    width: '100%'
   },
-  iconWrapper: {
+  labelContainer: {
     alignItems: 'center',
-    justifyContent: 'center',
-    width: scale(30)
+    columnGap: scale(8),
+    flexDirection: 'row',
+    marginBottom: verticalScale(25)
+  },
+  labelStyle: {
+    color: Colors.blackShade2626,
+    fontFamily: Fonts.ThemeSemiBold,
+    fontSize: moderateScale(18)
+  },
+  stepperContainer: {
+    alignItems: 'center',
+    justifyContent: 'center'
   },
   title: {
-    color: Colors.black,
-    fontFamily: Fonts.ThemeSemiBold,
-    fontSize: moderateScale(17)
+    color: Colors.blackShade2626,
+    fontFamily: Fonts.ThemeRegular,
+    fontSize: moderateScale(16),
+    textAlign: 'center'
   },
   titleContainer: {
     alignItems: 'center',
-    left: 0,
-    position: 'absolute',
-    right: 0
+    marginTop: verticalScale(15)
   }
 })
