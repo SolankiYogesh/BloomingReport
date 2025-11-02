@@ -1,0 +1,5 @@
+export default {
+  back: `<svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21.692 12h-18m0 0 8.5-8.5m-8.5 8.5 8.5 8.5" stroke="#212428" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  eyeOn: `<svg width="21" height="21" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3.088 10.935c3-6.667 12-6.667 15 0" stroke="#BDBFD4" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/><path d="M10.588 14.269a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5" stroke="#BDBFD4" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  eyeOff: `<svg width="21" height="21" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3.088 10.935c3-6.667 12-6.667 15 0" stroke="#BDBFD4" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/><path d="M10.588 14.269a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5M4 4l13 13" stroke="#BDBFD4" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/></svg>`
+}
