@@ -1,6 +1,7 @@
 import AppButton from './AppButton'
 import AppCheckBox from './AppCheckBox/AppCheckBox'
 import AppContainer from './AppContainer'
+import AppFormFieldInput from './AppFormFieldInput/AppFormFieldInput'
 import AppHeader from './AppHeader'
 import AppInput from './AppInput'
 import AppLoader from './AppLoader/AppLoader'
@@ -13,6 +14,7 @@ export {
   AppButton,
   AppCheckBox,
   AppContainer,
+  AppFormFieldInput,
   AppHeader,
   AppInput,
   AppLoader,
