@@ -6,7 +6,6 @@ import type {XmlProps} from 'react-native-svg'
 import {SvgFromXml} from 'react-native-svg'
 
 import {moderateScale, scale, verticalScale} from '@/Helpers'
-import Utility from '@/Helpers/Utility'
 import {Colors, Fonts} from '@/Theme'
 
 type AppButtonProps = {
@@ -27,7 +26,7 @@ export default memo(
     style = {},
     disabled = false,
     leftImage,
-    backgroundColor = Utility.hexadecimal(Colors.primary)(80),
+    backgroundColor = Colors.primary,
     hintText,
     hintTextStyle = {},
     children,
@@ -50,7 +49,7 @@ export default memo(
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    borderRadius: moderateScale(12),
+    borderRadius: moderateScale(10),
     columnGap: scale(15),
     flexDirection: 'row',
     height: verticalScale(45),
@@ -68,6 +67,6 @@ const styles = StyleSheet.create({
   textStyle: {
     color: Colors.white,
     fontFamily: Fonts.ThemeRegular,
-    fontSize: moderateScale(15)
+    fontSize: moderateScale(16)
   }
 })

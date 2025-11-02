@@ -1,11 +1,11 @@
 import type {ReactNode} from 'react'
 import React, {forwardRef, useState} from 'react'
 import type {StyleProp, TextInput, TextInputProps, ViewStyle} from 'react-native'
-import {StyleSheet, Text, TextInput as RNTextInput, TouchableOpacity, View} from 'react-native'
+import {StyleSheet, Text, TextInput as RNTextInput, View} from 'react-native'
 import type {XmlProps} from 'react-native-svg'
 import {SvgFromXml} from 'react-native-svg'
 
-import {moderateScale, scale, SVGByteCode, verticalScale} from '@/Helpers'
+import {moderateScale, scale, verticalScale} from '@/Helpers'
 import {Colors, Fonts} from '@/Theme'
 
 type AppInputProps = TextInputProps & {
@@ -34,7 +34,6 @@ const AppInput = forwardRef<TextInput, AppInputProps>(
     },
     ref
   ) => {
-    const [isPasswordVisible, setIsPasswordVisible] = useState(!secureTextEntry)
     const [isFocus, setIsFocus] = useState(false)
 
     return (
@@ -59,21 +58,14 @@ const AppInput = forwardRef<TextInput, AppInputProps>(
             }}
             ref={ref}
             style={{...styles.input, ...((style as any) ?? {})}}
-            secureTextEntry={!isPasswordVisible && !!secureTextEntry}
-            placeholderTextColor={Colors.grayD1D1}
+            placeholderTextColor={Colors.blackShade2626}
             underlineColorAndroid="transparent"
             autoCapitalize="none"
             autoCorrect={false}
             autoComplete="off"
           />
           {rightNode}
-          {secureTextEntry ? (
-            <TouchableOpacity onPress={() => setIsPasswordVisible((prev) => !prev)}>
-              <SvgFromXml xml={isPasswordVisible ? SVGByteCode.eyeOn : SVGByteCode.eyeOff} />
-            </TouchableOpacity>
-          ) : (
-            rightImage?.xml && <SvgFromXml {...rightImage} />
-          )}
+          {rightImage?.xml && <SvgFromXml {...rightImage} />}
         </View>
 
         {error && isErrorTextShow && <Text style={styles.errorText}>{error}</Text>}
@@ -86,7 +78,7 @@ export default AppInput
 
 const styles = StyleSheet.create({
   container: {
-    rowGap: verticalScale(10)
+    rowGap: verticalScale(8)
   },
   errorBorder: {
     borderColor: Colors.redShadeFF
@@ -94,8 +86,7 @@ const styles = StyleSheet.create({
   errorText: {
     color: Colors.redShadeFF,
     fontFamily: Fonts.ThemeRegular,
-    fontSize: moderateScale(12),
-    marginVertical: verticalScale(4)
+    fontSize: moderateScale(12)
   },
   focusStyle: {
     borderColor: Colors.primary
@@ -109,9 +100,9 @@ const styles = StyleSheet.create({
   },
   inputWrapper: {
     alignItems: 'center',
-    backgroundColor: Colors.grayShadeF87,
-    borderColor: Colors.transparent,
-    borderRadius: moderateScale(12),
+    backgroundColor: Colors.white,
+    borderColor: Colors.grayShadeCBCB,
+    borderRadius: moderateScale(6),
     borderWidth: 1,
     columnGap: scale(10),
     flexDirection: 'row',
@@ -119,8 +110,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: scale(15)
   },
   label: {
-    color: Colors.black,
-    fontFamily: Fonts.ThemeSemiBold,
-    fontSize: moderateScale(13)
+    color: Colors.blackShade2626,
+    fontFamily: Fonts.ThemeRegular,
+    fontSize: moderateScale(16)
   }
 })
