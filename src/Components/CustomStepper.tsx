@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react'
+import React, {memo, useEffect} from 'react'
 import {Pressable, StyleSheet, Text, View} from 'react-native'
 import type {SharedValue} from 'react-native-reanimated'
 import Animated, {
@@ -92,7 +92,7 @@ const ProgressLineComponent = ({progress}: {progress: SharedValue<number>}) => {
   )
 }
 
-const CustomStepper = ({currentStep = 1, onStepPress}: StepperProps) => {
+export default memo(({currentStep = 1, onStepPress}: StepperProps) => {
   const progress = useSharedValue(currentStep)
 
   useEffect(() => {
@@ -124,7 +124,7 @@ const CustomStepper = ({currentStep = 1, onStepPress}: StepperProps) => {
       </View>
     </View>
   )
-}
+})
 
 const styles = StyleSheet.create({
   container: {
@@ -182,5 +182,3 @@ const styles = StyleSheet.create({
     zIndex: 1
   }
 })
-
-export default CustomStepper

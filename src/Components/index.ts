@@ -7,9 +7,9 @@ import AppInput from './AppInput'
 import AppLoader from './AppLoader/AppLoader'
 import Loader from './AppLoader/Loader'
 import CustomStepper from './CustomStepper'
+import LabelText from './LabelText'
 import LocationPickerModal from './LocationPickerModal'
 import SelectionModal from './SelectionModal'
-
 export {
   AppButton,
   AppCheckBox,
@@ -19,6 +19,7 @@ export {
   AppInput,
   AppLoader,
   CustomStepper,
+  LabelText,
   Loader,
   LocationPickerModal,
   SelectionModal

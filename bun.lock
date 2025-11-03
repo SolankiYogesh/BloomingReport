@@ -6,6 +6,7 @@
       "dependencies": {
         "@backpackapp-io/react-native-toast": "^0.15.0",
         "@hookform/resolvers": "^5.2.2",
+        "@react-native-community/geolocation": "^3.4.0",
         "@react-native-community/netinfo": "^11.4.1",
         "axios": "^1.13.1",
         "dayjs": "^1.11.19",
@@ -13,12 +14,15 @@
         "react": "19.1.0",
         "react-hook-form": "^7.57.0",
         "react-native": "0.81.5",
+        "react-native-android-location-enabler": "^3.0.1",
         "react-native-device-info": "^14.1.1",
+        "react-native-edge-to-edge": "^1.7.0",
         "react-native-gesture-handler": "^2.29.0",
         "react-native-keyboard-controller": "^1.19.3",
         "react-native-maps": "^1.26.18",
         "react-native-modal": "^14.0.0-rc.1",
         "react-native-pager-view": "^6.9.1",
+        "react-native-permissions": "^5.4.4",
         "react-native-reanimated": "^4.1.3",
         "react-native-safe-area-context": "^5.6.2",
         "react-native-svg": "^15.14.0",
@@ -493,6 +497,8 @@
     "@react-native-community/eslint-config": ["@react-native-community/eslint-config@3.2.0", "", { "dependencies": { "@babel/core": "^7.14.0", "@babel/eslint-parser": "^7.18.2", "@react-native-community/eslint-plugin": "^1.1.0", "@typescript-eslint/eslint-plugin": "^5.30.5", "@typescript-eslint/parser": "^5.30.5", "eslint-config-prettier": "^8.5.0", "eslint-plugin-eslint-comments": "^3.2.0", "eslint-plugin-ft-flow": "^2.0.1", "eslint-plugin-jest": "^26.5.3", "eslint-plugin-prettier": "^4.2.1", "eslint-plugin-react": "^7.30.1", "eslint-plugin-react-hooks": "^4.6.0", "eslint-plugin-react-native": "^4.0.0" }, "peerDependencies": { "eslint": ">=8", "prettier": ">=2" } }, "sha512-ZjGvoeiBtCbd506hQqwjKmkWPgynGUoJspG8/MuV/EfKnkjCtBmeJvq2n+sWbWEvL9LWXDp2GJmPzmvU5RSvKQ=="],
 
     "@react-native-community/eslint-plugin": ["@react-native-community/eslint-plugin@1.3.0", "", {}, "sha512-+zDZ20NUnSWghj7Ku5aFphMzuM9JulqCW+aPXT6IfIXFbb8tzYTTOSeRFOtuekJ99ibW2fUCSsjuKNlwDIbHFg=="],
+
+    "@react-native-community/geolocation": ["@react-native-community/geolocation@3.4.0", "", { "peerDependencies": { "react": "*", "react-native": "*" } }, "sha512-bzZH89/cwmpkPMKKveoC72C4JH0yF4St5Ceg/ZM9pA1SqX9MlRIrIrrOGZ/+yi++xAvFDiYfihtn9TvXWU9/rA=="],
 
     "@react-native-community/netinfo": ["@react-native-community/netinfo@11.4.1", "", { "peerDependencies": { "react-native": ">=0.59" } }, "sha512-B0BYAkghz3Q2V09BF88RA601XursIEA111tnc2JOaN7axJWmNefmfjZqw/KdSxKZp7CZUuPpjBmz/WCR9uaHYg=="],
 
@@ -1722,9 +1728,13 @@
 
     "react-native": ["react-native@0.81.5", "", { "dependencies": { "@jest/create-cache-key-function": "^29.7.0", "@react-native/assets-registry": "0.81.5", "@react-native/codegen": "0.81.5", "@react-native/community-cli-plugin": "0.81.5", "@react-native/gradle-plugin": "0.81.5", "@react-native/js-polyfills": "0.81.5", "@react-native/normalize-colors": "0.81.5", "@react-native/virtualized-lists": "0.81.5", "abort-controller": "^3.0.0", "anser": "^1.4.9", "ansi-regex": "^5.0.0", "babel-jest": "^29.7.0", "babel-plugin-syntax-hermes-parser": "0.29.1", "base64-js": "^1.5.1", "commander": "^12.0.0", "flow-enums-runtime": "^0.0.6", "glob": "^7.1.1", "invariant": "^2.2.4", "jest-environment-node": "^29.7.0", "memoize-one": "^5.0.0", "metro-runtime": "^0.83.1", "metro-source-map": "^0.83.1", "nullthrows": "^1.1.1", "pretty-format": "^29.7.0", "promise": "^8.3.0", "react-devtools-core": "^6.1.5", "react-refresh": "^0.14.0", "regenerator-runtime": "^0.13.2", "scheduler": "0.26.0", "semver": "^7.1.3", "stacktrace-parser": "^0.1.10", "whatwg-fetch": "^3.0.0", "ws": "^6.2.3", "yargs": "^17.6.2" }, "peerDependencies": { "@types/react": "^19.1.0", "react": "^19.1.0" }, "optionalPeers": ["@types/react"], "bin": { "react-native": "cli.js" } }, "sha512-1w+/oSjEXZjMqsIvmkCRsOc8UBYv163bTWKTI8+1mxztvQPhCRYGTvZ/PL1w16xXHneIj/SLGfxWg2GWN2uexw=="],
 
+    "react-native-android-location-enabler": ["react-native-android-location-enabler@3.0.1", "", { "peerDependencies": { "react": "*", "react-native": "*" } }, "sha512-X4gHdEFf/dqSNhVDQ2cQUibnNRd6xIG34UGDMnwoCKIPLC2wYzALs/gPrDnjrAWsuxjaleZXwUIrX3o9nbtsgw=="],
+
     "react-native-animatable": ["react-native-animatable@1.4.0", "", { "dependencies": { "prop-types": "^15.8.1" } }, "sha512-DZwaDVWm2NBvBxf7I0wXKXLKb/TxDnkV53sWhCvei1pRyTX3MVFpkvdYBknNBqPrxYuAIlPxEp7gJOidIauUkw=="],
 
     "react-native-device-info": ["react-native-device-info@14.1.1", "", { "peerDependencies": { "react-native": "*" } }, "sha512-lXFpe6DJmzbQXNLWxlMHP2xuTU5gwrKAvI8dCAZuERhW9eOXSubOQIesk9lIBnsi9pI19GMrcpJEvs4ARPRYmw=="],
+
+    "react-native-edge-to-edge": ["react-native-edge-to-edge@1.7.0", "", { "peerDependencies": { "react": "*", "react-native": "*" } }, "sha512-ERegbsq28yoMndn/Uq49i4h6aAhMvTEjOfkFh50yX9H/dMjjCr/Tix/es/9JcPRvC+q7VzCMWfxWDUb6Jrq1OQ=="],
 
     "react-native-gesture-handler": ["react-native-gesture-handler@2.29.0", "", { "dependencies": { "@egjs/hammerjs": "^2.0.17", "hoist-non-react-statics": "^3.3.0", "invariant": "^2.2.4" }, "peerDependencies": { "react": "*", "react-native": "*" } }, "sha512-nxikN5b2ebSTPqqhIlTHQJqIHTu0Y5GAhST3w3/G1pm9BlqHVFcLFPZfIaT4A3TVKjQDcKElij1hhHKpAVUcOQ=="],
 
@@ -1737,6 +1747,8 @@
     "react-native-modal": ["react-native-modal@14.0.0-rc.1", "", { "dependencies": { "react-native-animatable": "1.4.0" }, "peerDependencies": { "react": "*", "react-native": ">=0.70.0" } }, "sha512-v5pvGyx1FlmBzdHyPqBsYQyS2mIJhVmuXyNo5EarIzxicKhuoul6XasXMviGcXboEUT0dTYWs88/VendojPiVw=="],
 
     "react-native-pager-view": ["react-native-pager-view@6.9.1", "", { "peerDependencies": { "react": "*", "react-native": "*" } }, "sha512-uUT0MMMbNtoSbxe9pRvdJJKEi9snjuJ3fXlZhG8F2vVMOBJVt/AFtqMPUHu9yMflmqOr08PewKzj9EPl/Yj+Gw=="],
+
+    "react-native-permissions": ["react-native-permissions@5.4.4", "", { "peerDependencies": { "react": ">=18.1.0", "react-native": ">=0.70.0", "react-native-windows": ">=0.70.0" }, "optionalPeers": ["react-native-windows"] }, "sha512-WB5lRCBGXETfuaUhem2vgOceb9+URCeyfKpLGFSwoOffLuyJCA6+NTR3l1KLkrK4Ykxsig37z16/shUVufmt7A=="],
 
     "react-native-reanimated": ["react-native-reanimated@4.1.3", "", { "dependencies": { "react-native-is-edge-to-edge": "^1.2.1", "semver": "7.7.2" }, "peerDependencies": { "@babel/core": "^7.0.0-0", "react": "*", "react-native": "*", "react-native-worklets": ">=0.5.0" } }, "sha512-GP8wsi1u3nqvC1fMab/m8gfFwFyldawElCcUSBJQgfrXeLmsPPUOpDw44lbLeCpcwUuLa05WTVePdTEwCLTUZg=="],
 

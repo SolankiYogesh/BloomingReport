@@ -1,12 +1,19 @@
-import React, {useState} from 'react'
-import {Alert, StyleSheet, Text, TextInput, TouchableOpacity, View} from 'react-native'
-import MapView, {Marker} from 'react-native-maps'
+import {toast} from '@backpackapp-io/react-native-toast'
+import Geolocation from '@react-native-community/geolocation'
+import React, {memo, useCallback, useState} from 'react'
+import {Alert, StyleSheet, Text, View} from 'react-native'
+import type {Region} from 'react-native-maps'
+import MapView from 'react-native-maps'
 import Modal from 'react-native-modal'
+import {SvgFromXml} from 'react-native-svg'
 
-import {moderateScale, scale, verticalScale} from '@/Helpers'
+import {moderateScale, PADDING, scale, SVGByteCode, verticalScale} from '@/Helpers'
 import {Fonts} from '@/Theme'
 
 import Colors from '../../Theme/Colors'
+import AppButton from '../AppButton'
+import AppHeader from '../AppHeader'
+import AppInput from '../AppInput'
 
 type LocationData = {
   latitude: number
@@ -21,44 +28,82 @@ type LocationPickerModalProps = {
   onClose: () => void
   onConfirm: (location: LocationData) => void
   initialLocation?: LocationData
-  searchPlaceholder?: string
 }
 
-const LocationPickerModal: React.FC<LocationPickerModalProps> = ({
-  isVisible,
-  onClose,
-  onConfirm,
-  initialLocation,
-  searchPlaceholder = 'Search for street name or area'
-}) => {
-  const [searchText, setSearchText] = useState('')
-  const [selectedLocation] = useState<LocationData>(
-    initialLocation || {
-      latitude: 12.9716,
-      longitude: 77.5946,
-      address: 'Pali road',
-      city: 'Devanahalli',
-      state: 'Karnataka'
-    }
-  )
+const fetchAddress = async (latitude: number, longitude: number) => {
+  try {
+    const response = await fetch(
+      `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=AIzaSyCFb5wVYQbwRZLDR46nFhE4R_ZxEdBKXF4`
+    )
 
-  const handleSearch = () => {
+    const data = await response.json()
+
+    if (data.results && data.results.length > 0) {
+      const addressComponents = data.results[0].address_components
+      const getComponent = (type: string) =>
+        addressComponents.find((c: any) => c.types.includes(type))?.long_name || ''
+
+      const placeName =
+        getComponent('point_of_interest') ||
+        getComponent('premise') ||
+        getComponent('establishment') ||
+        getComponent('neighborhood')
+      const city = getComponent('locality') || getComponent('administrative_area_level_2')
+      const state = getComponent('administrative_area_level_1')
+
+      return {placeName, city, state}
+    } else {
+      return null
+    }
+  } catch (_) {
+    return null
+  }
+}
+
+export default memo(({isVisible, onClose, onConfirm}: LocationPickerModalProps) => {
+  const [searchText, setSearchText] = useState('')
+  const [selectedLocation, setSelectedLocation] = useState<LocationData | null>(null)
+  const [currentLocation, setCurrentLocation] = useState<{
+    latitude: number
+    longitude: number
+  } | null>(null)
+
+  const handleSearch = useCallback(() => {
     if (!searchText.trim()) {
       return
     }
-
-    // Here you would implement geocoding to search for the location
     Alert.alert('Search', `Searching for: ${searchText}`)
-  }
-
-  const handleConfirm = () => {
+  }, [searchText])
+  const handleConfirm = useCallback(() => {
+    if (!selectedLocation) {
+      toast.error('Please select valid location')
+      return
+    }
     onConfirm(selectedLocation)
     onClose()
-  }
+  }, [onClose, onConfirm, selectedLocation])
 
-  const handleCurrentLocation = () => {
-    Alert.alert('Location', 'Getting current location...')
-  }
+  const onRegionChangeComplete = useCallback(async (region: Region) => {
+    const data = await fetchAddress(region.latitude, region.longitude)
+    if (data) {
+      setSelectedLocation({
+        address: data.placeName,
+        city: data.city,
+        state: data.state,
+        latitude: region.latitude,
+        longitude: region.longitude
+      })
+    }
+  }, [])
+
+  const onModalShow = useCallback(() => {
+    Geolocation.getCurrentPosition((result) => {
+      setCurrentLocation({
+        latitude: result.coords.latitude,
+        longitude: result.coords.longitude
+      })
+    })
+  }, [])
 
   return (
     <Modal
@@ -66,92 +111,65 @@ const LocationPickerModal: React.FC<LocationPickerModalProps> = ({
       onBackdropPress={onClose}
       onBackButtonPress={onClose}
       style={styles.modal}
+      onModalShow={onModalShow}
       animationIn="slideInRight"
       animationOut="slideOutRight"
       backdropOpacity={0.5}
     >
       <View style={styles.container}>
-        <View style={styles.header}>
-          <TouchableOpacity onPress={onClose} style={styles.backButton}>
-            <Text style={styles.backText}>←</Text>
-          </TouchableOpacity>
-          <Text style={styles.title}>Location</Text>
-          <View style={styles.placeholder} />
-        </View>
-
-        <View style={styles.searchContainer}>
-          <TextInput
-            style={styles.searchInput}
-            placeholder={searchPlaceholder}
+        <AppHeader title="Location" onPressBack={onClose}>
+          <AppInput
+            placeholder={'Search for street name or area'}
             placeholderTextColor={Colors.grayShadeCBCB}
             value={searchText}
+            rightImage={{
+              xml: SVGByteCode.search
+            }}
+            containerStyle={{
+              paddingBottom: verticalScale(16)
+            }}
             onChangeText={setSearchText}
             onSubmitEditing={handleSearch}
           />
-          <TouchableOpacity onPress={handleSearch} style={styles.searchButton}>
-            <Text style={styles.searchIcon}>🔍</Text>
-          </TouchableOpacity>
-        </View>
+        </AppHeader>
 
-        <View style={styles.mapContainer}>
+        {currentLocation && (
           <MapView
-            style={styles.map}
+            style={StyleSheet.absoluteFill}
             initialRegion={{
-              latitude: selectedLocation.latitude,
-              longitude: selectedLocation.longitude,
+              latitude: currentLocation.latitude,
+              longitude: currentLocation.longitude,
               latitudeDelta: 0.0922,
               longitudeDelta: 0.0421
             }}
-          >
-            <Marker
-              coordinate={{
-                latitude: selectedLocation.latitude,
-                longitude: selectedLocation.longitude
-              }}
-              title="Selected Location"
-              description={selectedLocation.address}
-            />
-          </MapView>
-          <View style={styles.mapPlaceholder}>
-            <Text style={styles.mapPlaceholderText}>
-              Map View
-              {'\n'}
-              (Install react-native-maps to enable)
-            </Text>
-            <View style={styles.markerPlaceholder}>
-              <Text style={styles.markerText}>📍</Text>
+            onRegionChangeComplete={onRegionChangeComplete}
+            showsUserLocation
+            showsMyLocationButton
+          />
+        )}
+
+        <View style={styles.mapContainer}>
+          <SvgFromXml style={styles.pinStyle} xml={SVGByteCode.pin} />
+        </View>
+
+        {selectedLocation && (
+          <View style={styles.bottomSheet}>
+            <View style={styles.locationInfo}>
+              <SvgFromXml xml={SVGByteCode.locationBlack} />
+              <View style={styles.locationDetails}>
+                <Text style={styles.locationAddress}>{selectedLocation.address}</Text>
+                <Text style={styles.locationCity}>
+                  {selectedLocation.city}, {selectedLocation.state}
+                </Text>
+              </View>
             </View>
+            <AppButton title="Confirm Location" onPress={handleConfirm} />
           </View>
-
-          <View style={styles.tooltip}>
-            <Text style={styles.tooltipText}>Pin the location of your house</Text>
-            <Text style={styles.tooltipSubtext}>Move the pin to change the location</Text>
-          </View>
-
-          <TouchableOpacity style={styles.currentLocationButton} onPress={handleCurrentLocation}>
-            <Text style={styles.currentLocationText}>📍</Text>
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.locationInfo}>
-          <View style={styles.locationIcon}>
-            <Text style={styles.locationIconText}>📍</Text>
-          </View>
-          <View style={styles.locationDetails}>
-            <Text style={styles.locationAddress}>{selectedLocation.address}</Text>
-            <Text style={styles.locationCity}>
-              {selectedLocation.city}, {selectedLocation.state}
-            </Text>
-          </View>
-        </View>
-
-        <TouchableOpacity style={styles.confirmButton} onPress={handleConfirm}>
-          <Text style={styles.confirmButtonText}>Confirm Location</Text>
-        </TouchableOpacity>
+        )}
       </View>
     </Modal>
   )
-}
+})
 
 const styles = StyleSheet.create({
   backButton: {
@@ -160,6 +178,14 @@ const styles = StyleSheet.create({
   backText: {
     color: Colors.blackShade2626,
     fontSize: 24
+  },
+  bottomSheet: {
+    backgroundColor: Colors.white,
+    borderTopLeftRadius: moderateScale(40),
+    borderTopRightRadius: moderateScale(40),
+    padding: PADDING,
+    rowGap: verticalScale(16),
+    width: '100%'
   },
   confirmButton: {
     alignItems: 'center',
@@ -178,37 +204,12 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.white,
     flex: 1
   },
-  currentLocationButton: {
-    alignItems: 'center',
-    backgroundColor: Colors.white,
-    borderRadius: 25,
-    bottom: 20,
-    elevation: 5,
-    height: 50,
-    justifyContent: 'center',
-    position: 'absolute',
-    right: 20,
-    shadowColor: Colors.black,
-    shadowOffset: {
-      height: 2,
-      width: 0
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    width: 50
-  },
-  currentLocationText: {
-    fontSize: 20
-  },
   header: {
     alignItems: 'center',
-    borderBottomColor: Colors.grayShadeF87,
-    borderBottomWidth: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingTop: 50,
-    paddingVertical: 15
+    paddingHorizontal: PADDING,
+    paddingVertical: verticalScale(12)
   },
   locationAddress: {
     color: Colors.blackShade2626,
@@ -231,96 +232,28 @@ const styles = StyleSheet.create({
   },
   locationInfo: {
     alignItems: 'center',
-    backgroundColor: Colors.white,
-    borderTopColor: Colors.grayShadeF87,
-    borderTopWidth: 1,
-    flexDirection: 'row',
-    paddingHorizontal: scale(20),
-    paddingVertical: verticalScale(15)
+    columnGap: scale(10),
+    flexDirection: 'row'
   },
   mapContainer: {
-    flex: 1,
-    position: 'relative'
-  },
-  mapPlaceholder: {
-    alignItems: 'center',
-    backgroundColor: Colors.grayShadeF87,
-    flex: 1,
-    justifyContent: 'center',
-    position: 'relative'
-  },
-  mapPlaceholderText: {
-    color: Colors.grayShadeCBCB,
-    fontSize: moderateScale(16),
-    textAlign: 'center'
-  },
-  markerPlaceholder: {
-    left: '50%',
-    marginLeft: -15,
-    marginTop: -30,
-    position: 'absolute',
-    top: '45%'
-  },
-  markerText: {
-    fontSize: moderateScale(30)
+    flex: 1
   },
   modal: {
     margin: 0
   },
+
+  pinStyle: {
+    left: '47%',
+    position: 'absolute',
+    top: '42%',
+    zIndex: 99999
+  },
   placeholder: {
     width: scale(34)
-  },
-  searchButton: {
-    padding: scale(10)
-  },
-  searchContainer: {
-    alignItems: 'center',
-    backgroundColor: Colors.white,
-    flexDirection: 'row',
-    paddingHorizontal: scale(20),
-    paddingVertical: verticalScale(15)
-  },
-  searchIcon: {
-    color: Colors.primary,
-    fontSize: moderateScale(20)
-  },
-  searchInput: {
-    borderColor: Colors.grayShadeCBCB,
-    borderRadius: 8,
-    borderWidth: 1,
-    color: Colors.blackShade2626,
-    flex: 1,
-    fontSize: moderateScale(16),
-    marginRight: scale(10),
-    paddingHorizontal: scale(15),
-    paddingVertical: verticalScale(12)
   },
   title: {
     color: Colors.blackShade2626,
     fontFamily: Fonts.ThemeSemiBold,
     fontSize: moderateScale(18)
-  },
-  tooltip: {
-    backgroundColor: Colors.blackShade2626,
-    borderRadius: 8,
-    left: scale(20),
-    paddingHorizontal: scale(15),
-    paddingVertical: verticalScale(10),
-    position: 'absolute',
-    right: scale(20),
-    top: verticalScale(20)
-  },
-  tooltipSubtext: {
-    color: Colors.white,
-    fontSize: moderateScale(12),
-    marginTop: verticalScale(2),
-    opacity: 0.8
-  },
-  tooltipText: {
-    color: Colors.white,
-    fontFamily: Fonts.ThemeSemiBold,
-    fontSize: moderateScale(14)
   }
 })
-
-export default LocationPickerModal

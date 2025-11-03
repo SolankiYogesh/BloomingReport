@@ -9,5 +9,7 @@ export default {
   redShadeFF: '#FF4C4C',
   grayShadeF87: '#F8F7FC',
   grayShadeCBCB: '#CBCBCB',
-  blackShade2626: '#262626'
+  blackShade2626: '#262626',
+  grayShadeEFE: '#EFEEEE',
+  redShadeFFE: '#FFE7E3'
 }

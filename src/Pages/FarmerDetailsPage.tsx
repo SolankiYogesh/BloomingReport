@@ -1,18 +1,20 @@
 import {yupResolver} from '@hookform/resolvers/yup'
 import {useNetInfo} from '@react-native-community/netinfo'
-import {memo} from 'react'
+import {memo, useState} from 'react'
 import {Controller, useForm} from 'react-hook-form'
-import {StyleSheet, Text, View} from 'react-native'
+import {Platform, StyleSheet, Text, TouchableOpacity, View} from 'react-native'
+import {
+  isLocationEnabled,
+  promptForEnableLocationIfNeeded
+} from 'react-native-android-location-enabler'
 import {KeyboardAwareScrollView} from 'react-native-keyboard-controller'
+import {SvgFromXml} from 'react-native-svg'
 import * as yup from 'yup'
 
-import {AppCheckBox} from '@/Components'
-import AppButton from '@/Components/AppButton'
-import AppInput from '@/Components/AppInput'
-import {moderateScale, PADDING, scale, verticalScale} from '@/Helpers'
+import {AppButton, AppCheckBox, AppInput, LabelText, LocationPickerModal} from '@/Components'
+import {moderateScale, PADDING, Permission, scale, SVGByteCode, verticalScale} from '@/Helpers'
 import {Colors, Fonts} from '@/Theme'
 
-// Validation schema
 const farmerDetailsSchema = yup.object({
   fullName: yup.string().required('Full name is required'),
   contactNumber: yup
@@ -24,7 +26,14 @@ const farmerDetailsSchema = yup.object({
 
 type FarmerDetailsForm = yup.InferType<typeof farmerDetailsSchema>
 
+const genderOptions = [
+  {label: 'Male', value: 'male'},
+  {label: 'Female', value: 'female'},
+  {label: 'Other', value: 'other'}
+]
+
 export default memo(() => {
+  const [isLocationPicker, setIsLocationPicker] = useState(false)
   const {isConnected} = useNetInfo()
   const {
     control,
@@ -42,12 +51,6 @@ export default memo(() => {
   const onSubmit = (data: FarmerDetailsForm) => {
     console.log('Form data:', data)
   }
-
-  const genderOptions = [
-    {label: 'Male', value: 'male'},
-    {label: 'Female', value: 'female'},
-    {label: 'Other', value: 'other'}
-  ]
 
   return (
     <View style={styles.container}>
@@ -91,7 +94,7 @@ export default memo(() => {
         </View>
 
         <View style={styles.fieldContainer}>
-          <Text style={styles.genderLabel}>3. Select Gender*</Text>
+          <LabelText style={styles.genderLabel} label="3. Select Gender*" />
           <View style={styles.genderOptions}>
             {genderOptions.map((option) => (
               <Controller
@@ -108,7 +111,7 @@ export default memo(() => {
               />
             ))}
           </View>
-          {errors.gender && <Text style={styles.errorText}>{errors.gender.message}</Text>}
+          {!!errors?.gender && <Text style={styles.errorText}>{errors.gender.message}</Text>}
         </View>
         {!isConnected && (
           <View style={styles.offlineViewContainer}>
@@ -119,6 +122,44 @@ export default memo(() => {
             <Text style={styles.noInternetTextStyle}>Fill details manually</Text>
           </View>
         )}
+        <View style={styles.fieldContainer}>
+          <LabelText style={styles.genderLabel} label="4. House location*" />
+
+          <View style={styles.onlineViewContainer}>
+            <TouchableOpacity
+              style={styles.locationButtonStyle}
+              onPress={() => {
+                Permission.getLocationPermission().then(async (resp) => {
+                  if (resp) {
+                    if (Platform.OS === 'android') {
+                      const checkEnabled = await isLocationEnabled()
+                      if (!checkEnabled) {
+                        const enableResult = await promptForEnableLocationIfNeeded()
+                        if (enableResult === 'enabled') {
+                          setIsLocationPicker(true)
+                        }
+                      } else {
+                        setIsLocationPicker(true)
+                      }
+                    } else {
+                      setIsLocationPicker(true)
+                    }
+                  }
+                })
+              }}
+            >
+              <SvgFromXml xml={SVGByteCode.location} />
+              <View>
+                <Text style={styles.locationText}>Fetch Location</Text>
+                <Text style={styles.locationRecoText}>{'(Recommended)'}</Text>
+              </View>
+            </TouchableOpacity>
+            <Text style={[styles.noInternetTextStyle, styles.textUpparStyle]}>Or</Text>
+            <TouchableOpacity style={[styles.locationButtonStyle, styles.manualButtonStyle]}>
+              <Text>Enter Manually</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
 
         <AppButton
           title="Create Farmer Profile"
@@ -126,6 +167,15 @@ export default memo(() => {
           style={styles.submitButton}
         />
       </KeyboardAwareScrollView>
+      {isLocationPicker && (
+        <LocationPickerModal
+          onConfirm={(location) => {
+            console.log('location', location)
+          }}
+          isVisible={true}
+          onClose={() => setIsLocationPicker(false)}
+        />
+      )}
     </View>
   )
 })
@@ -150,15 +200,35 @@ const styles = StyleSheet.create({
     width: '100%'
   },
   genderLabel: {
-    color: Colors.blackShade2626,
-    fontFamily: Fonts.ThemeRegular,
-    fontSize: moderateScale(16),
     marginBottom: verticalScale(16)
   },
   genderOptions: {
     rowGap: verticalScale(16)
   },
+  locationButtonStyle: {
+    alignItems: 'center',
+    backgroundColor: Colors.redShadeFFE,
+    borderRadius: moderateScale(6),
+    columnGap: scale(10),
+    flexDirection: 'row',
+    justifyContent: 'center',
+    minHeight: verticalScale(48),
+    padding: scale(12)
+  },
 
+  locationRecoText: {
+    color: Colors.primary,
+    fontFamily: Fonts.ThemeRegular,
+    fontSize: moderateScale(12)
+  },
+  locationText: {
+    color: Colors.primary,
+    fontFamily: Fonts.ThemeSemiBold,
+    fontSize: moderateScale(14)
+  },
+  manualButtonStyle: {
+    backgroundColor: Colors.grayShadeEFE
+  },
   noInternetTextStyle: {
     color: Colors.blackShade2626,
     fontFamily: Fonts.ThemeRegular,
@@ -170,6 +240,11 @@ const styles = StyleSheet.create({
     marginVertical: verticalScale(8),
     rowGap: verticalScale(12)
   },
+  onlineViewContainer: {
+    marginVertical: verticalScale(8),
+    paddingHorizontal: PADDING,
+    rowGap: verticalScale(16)
+  },
   scrollContent: {
     flexGrow: 1,
     paddingBottom: verticalScale(40),
@@ -178,5 +253,8 @@ const styles = StyleSheet.create({
   },
   submitButton: {
     margin: PADDING
+  },
+  textUpparStyle: {
+    textTransform: 'uppercase'
   }
 })

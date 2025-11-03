@@ -1,3 +1,4 @@
+import type {ReactNode} from 'react'
 import React, {memo} from 'react'
 import {StyleSheet, Text, View} from 'react-native'
 import {SvgFromXml} from 'react-native-svg'
@@ -5,28 +6,28 @@ import {SvgFromXml} from 'react-native-svg'
 import {moderateScale, PADDING, scale, SVGByteCode, verticalScale} from '@/Helpers'
 import {Colors, Fonts} from '@/Theme'
 
-import CustomStepper from './CustomStepper'
-
 type AppHeaderProps = {
-  currentStep: number
-  onStepPress?: (step: number) => void
+  children?: ReactNode
+  title?: string
+  isBack?: boolean
+  onPressBack?: () => void
 }
 
-const LABELS = ['Farmer Profile', 'Land Details', 'Flowering Details', 'Beekeeping Scope']
-
-export default memo(({currentStep, onStepPress}: AppHeaderProps) => {
+export default memo(({children, title, isBack = true, onPressBack = () => {}}: AppHeaderProps) => {
   return (
     <View style={styles.container}>
       <View style={styles.labelContainer}>
-        {currentStep > 1 && (
-          <SvgFromXml width={verticalScale(20)} height={verticalScale(20)} xml={SVGByteCode.back} />
+        {isBack && (
+          <SvgFromXml
+            onPress={onPressBack}
+            width={verticalScale(20)}
+            height={verticalScale(20)}
+            xml={SVGByteCode.back}
+          />
         )}
-        <Text style={styles.labelStyle}>Blooming Report</Text>
+        <Text style={styles.labelStyle}>{title}</Text>
       </View>
-      <CustomStepper currentStep={currentStep} onStepPress={onStepPress} />
-      <View style={styles.titleContainer}>
-        <Text style={styles.title}>{LABELS[currentStep - 1] || LABELS[0]}</Text>
-      </View>
+      {children}
     </View>
   )
 })
@@ -40,7 +41,8 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     paddingHorizontal: PADDING,
     paddingVertical: verticalScale(12),
-    width: '100%'
+    width: '100%',
+    zIndex: 999
   },
   labelContainer: {
     alignItems: 'center',
@@ -52,19 +54,5 @@ const styles = StyleSheet.create({
     color: Colors.blackShade2626,
     fontFamily: Fonts.ThemeSemiBold,
     fontSize: moderateScale(18)
-  },
-  stepperContainer: {
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  title: {
-    color: Colors.blackShade2626,
-    fontFamily: Fonts.ThemeRegular,
-    fontSize: moderateScale(16),
-    textAlign: 'center'
-  },
-  titleContainer: {
-    alignItems: 'center',
-    marginTop: verticalScale(15)
   }
 })

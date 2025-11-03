@@ -8,6 +8,8 @@ import {SvgFromXml} from 'react-native-svg'
 import {moderateScale, scale, verticalScale} from '@/Helpers'
 import {Colors, Fonts} from '@/Theme'
 
+import LableText from './LabelText'
+
 type AppInputProps = TextInputProps & {
   error?: string
   label?: string
@@ -38,7 +40,7 @@ const AppInput = forwardRef<TextInput, AppInputProps>(
 
     return (
       <View style={[styles.container, containerStyle]}>
-        {!!label && <Text style={styles.label}>{label}</Text>}
+        {!!label && <LableText label={label} />}
 
         <View
           style={[styles.inputWrapper, isFocus && styles.focusStyle, error && styles.errorBorder]}
@@ -108,10 +110,5 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     overflow: 'hidden',
     paddingHorizontal: scale(15)
-  },
-  label: {
-    color: Colors.blackShade2626,
-    fontFamily: Fonts.ThemeRegular,
-    fontSize: moderateScale(16)
   }
 })
